@@ -1,0 +1,47 @@
+References:
+  Pyspark 
+  - https://medium.com/@SaphE/testing-apache-spark-locally-docker-compose-and-kubernetes-deployment-94d35a54f222
+
+  Airflow + Pyspark
+  - https://www.youtube.com/watch?v=o_pne3aLW2w
+    - repo used - https://github.com/airscholar/SparkingFlow
+
+
+Followed some instructions for each
+Docker for pyspark: In root dir
+- docker build -t our-own-apache-spark:3.4.0 .
+- docker-compose up -d
+
+Docker for airflow: In airflow dir
+- can just run with docker-compose up -d, cd first to that dir. use "--build" force rebuild
+- note by video: webserver usually not starts after first docker compose up. just do another docker-compose up -d (no --rebuild)
+
+Set Connection in airflow 
+- Error if not set: org.apache.spark.SparkException: When running with master 'yarn' either HADOOP_CONF_DIR or YARN_CONF_DIR must be set in the environment.
+- Set:
+  - Connection ID = spark-conn
+  - Connection Type = Spark 
+  - Host = spark://spark-master-1
+  - Port = 7077
+  - Deploy mode = client 
+  - Spark binar = spark-submit
+
+=================
+To Do:
+- Recreate issue on previous issue: pyspark read excel, or excel pandas then convert pyspark
+- Test pandas read excel and convert to pyspark 
+- Test using sir's provided spark docker and cdp airflow repo
+- Modify docker files as necessary
+  - PySpark: See if docker-compose can do build context Dockerfile (to docker build image and run in one command, like in airflow docker)
+    Note: moving build in docker currently facing issue: services.build Additional property context is not allowed
+  - Move pyspark docker to subfolder too?
+- Make .bat file to run docker commands (check if work in sbc laptop)
+
+==========
+Reminder:
+- Force rebuild
+  - docker-compose up -d --build
+
+- Log as root in container
+  - docker exec -u root -i -t <<container id>> /bin/bash
+

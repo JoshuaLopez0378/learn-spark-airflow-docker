@@ -1,0 +1,61 @@
+version: "3.3"
+services:
+  # build:
+  #   context: .
+  #   dockerfile: Dockerfile
+  spark-master:
+    image: our-own-apache-spark:3.4.0
+    networks:
+      - local_ps_af    
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    volumes:
+       - ./utils:/opt/spark-utils
+       - ./resources:/opt/spark-resources
+    environment:
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+  spark-worker-a:
+    image: our-own-apache-spark:3.4.0
+    networks:
+      - local_ps_af    
+    ports:
+      - "9091:8080"
+      - "7000:7000"
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=1G
+      - SPARK_EXECUTOR_MEMORY=1G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-a
+    volumes:
+       - ./utils:/opt/spark-utils
+       - ./resources:/opt/spark-resources
+  spark-worker-b:
+    image: our-own-apache-spark:3.4.0
+    networks:
+      - local_ps_af
+    ports:
+      - "9092:8080"
+      - "7001:7000"
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=1G
+      - SPARK_EXECUTOR_MEMORY=1G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-b
+    volumes:
+       - ./utils:/opt/spark-utils
+       - ./resources:/opt/spark-resources
+  
+networks:
+  local_ps_af:
