@@ -11,7 +11,7 @@ RUN apt-get update && \
 
 # Set JAVA_HOME environment variable, reminder: in reference it was arm64, not amd64 but current image and install
 # redirects amd64, double check java env with: update-alternatives --list java after run
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 USER airflow
 
